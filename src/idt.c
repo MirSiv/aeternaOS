@@ -1,6 +1,7 @@
 #include "idt.h"
 #include "serial.h"
-#include "io.h" // наш новый мост к портам ввода-вывода
+#include "io.h"
+#include "keyboard.h"
 
 static struct idt_entry idt[256];
 static struct idt_ptr idt_p;
@@ -26,33 +27,25 @@ void idt_set_gate(uint8_t num, uint64_t base, uint16_t sel, uint8_t flags) {
     idt[num].reserved = 0;
 }
 
-// Заглушки из ассемблера
 extern void *isr_stub_table[];
-extern void irq0(); // таймер
-extern void irq1(); // клавиатура
-
-// Настройка 8259 PIC (контроллера прерываний)
+extern void irq0();
+extern void irq1(); 
 void pic_init(void) {
     klog("[PIC] remapping PIC to vectors 32-47...\n");
     outb(0x20, 0x11); io_wait();
     outb(0xA0, 0x11); io_wait();
-    outb(0x21, 0x20); io_wait(); // IRQ 0-7 -> векторы 32-39
-    outb(0xA1, 0x28); io_wait(); // IRQ 8-15 -> векторы 40-47
+    outb(0x21, 0x20); io_wait();
+    outb(0xA1, 0x28); io_wait();
     outb(0x21, 0x04); io_wait();
     outb(0xA1, 0x02); io_wait();
     outb(0x21, 0x01); io_wait();
     outb(0xA1, 0x01); io_wait();
-
-    // Разрешаем прерывания только от IRQ0 (таймер) и IRQ1 (клава)
-    // 0xFC = 11111100b (нули включают прерывания)
     outb(0x21, 0xFC);
     outb(0xA1, 0xFF);
     klog("[PIC] remap completed\n");
 }
-
-// Настройка системного таймера (PIT) на ~100 Гц
 void timer_init(void) {
-    klog("[PIT] setting timer frequency to 100Hz...\n");
+    klog("[PIT] setting timer frequency to 100hz...\n");
     uint32_t divisor = 1193182 / 100;
     outb(0x43, 0x36);
     outb(0x40, divisor & 0xFF);
@@ -119,13 +112,6 @@ void timer_handler(void) {
 
 void keyboard_handler(void) {
     uint8_t scancode = inb(0x60);
-
-    if (!(scancode & 0x80)) {
-        klog("[KEYBOARD] key pressed, scancode: ");
-        if (scancode == 0x1E) klog("a\n");
-        else if (scancode == 0x30) klog("b\n");
-        else klog("another key\n");
-    }
-
+    keyboard_handle_scan(scancode);
     outb(0x20, 0x20);
 }
