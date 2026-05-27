@@ -70,6 +70,11 @@ do_clean() {
         echo "aeternaos.iso was removed"
     fi
 
+    if [ -f "direct_qemu.log" ]; then
+        rm -f direct_qemu.log
+        echo "direct_qemu.log was removed"
+    fi
+
     if [ -f "iso_root/boot/kernel.bin" ]; then
         rm -f iso_root/boot/kernel.bin
         echo " -> iso_root/boot/kernel.bin was removed"
