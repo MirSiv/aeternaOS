@@ -1,6 +1,6 @@
 SRC_DIR="src"
 BUILD_DIR="build"
-FLAGS="-ffreestanding -O2 -Wall -Wextra -fno-stack-protector -mno-red-zone -fno-pic -fno-pie -fno-builtin -mno-mmx -mno-sse -mno-sse2"
+FLAGS="-Iinclude -ffreestanding -O2 -Wall -Wextra -fno-stack-protector -mno-red-zone -fno-pic -fno-pie -fno-builtin -mno-mmx -mno-sse -mno-sse2"
 LDFLAGS="-n -static --oformat=elf64-x86-64 --no-warn-rwx-segments -z max-page-size=0x1000 -T linker.ld"
 
 do_build() {
@@ -19,7 +19,7 @@ do_build() {
             filename="${filename%.*}"
             
             echo "  -> $c_file"
-            x86_64-linux-gnu-gcc -c "$c_file" -o "$BUILD_DIR/$filename.o" $FLAGS
+            x86_64-linux-gnu-gcc -c "$c_file" -o "$BUILD_DIR/$filename.o" -Iinclude $FLAGS
             
             OBJ_FILES="$OBJ_FILES $BUILD_DIR/$filename.o"
         fi
