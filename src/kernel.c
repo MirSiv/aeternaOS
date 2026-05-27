@@ -20,6 +20,8 @@ void kernel_main(uint64_t mb_addr) {
     idt_init();
     pmm_init(mb_addr);
     vmm_init();
+    __asm__ volatile ("sti");
+    klog("[kernel] interrupts enabled, system ready\n");
 
     while(1) {
         __asm__ volatile("hlt");

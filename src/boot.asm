@@ -374,6 +374,109 @@ global isr_stub_table
 
 align 8
 
+; !!! hardware irq handlers !!!
+
+extern timer_handler
+extern keyboard_handler
+
+global irq0
+irq0:
+    push qword 0  ; "код ошибки" (заглушка для сохранения структуры)
+    push qword 32 ; номер прерывания (вектор таймера)
+    
+    ; сохраняем все регистры (формируем interrupt_frame)
+    push rax
+    push rcx
+    push rdx
+    push rbx
+    push rbp
+    push rsi
+    push rdi
+    push r8
+    push r9
+    push r10
+    push r11
+    push r12
+    push r13
+    push r14
+    push r15
+
+    mov rdi, rsp    ; передаем указатель на фрейм первым аргументом в Си
+    mov rbp, rsp    ; запоминаем стек
+    and rsp, -16    ; выравниваем по 16 байт
+    sub rsp, 8
+
+    call timer_handler
+
+    mov rsp, rbp    ; восстанавливаем стек
+    
+    ; восстанавливаем регистры
+    pop r15
+    pop r14
+    pop r13
+    pop r12
+    pop r11
+    pop r10
+    pop r9
+    pop r8
+    pop rdi
+    pop rsi
+    pop rbp
+    pop rbx
+    pop rdx
+    pop rcx
+    pop rax
+    add rsp, 16    
+    iretq
+
+global irq1
+irq1:
+    push qword 0
+    push qword 33 
+    
+    push rax
+    push rcx
+    push rdx
+    push rbx
+    push rbp
+    push rsi
+    push rdi
+    push r8
+    push r9
+    push r10
+    push r11
+    push r12
+    push r13
+    push r14
+    push r15
+
+    mov rdi, rsp
+    mov rbp, rsp
+    and rsp, -16
+    sub rsp, 8
+
+    call keyboard_handler
+
+    mov rsp, rbp
+    
+    pop r15
+    pop r14
+    pop r13
+    pop r12
+    pop r11
+    pop r10
+    pop r9
+    pop r8
+    pop rdi
+    pop rsi
+    pop rbp
+    pop rbx
+    pop rdx
+    pop rcx
+    pop rax
+    add rsp, 16
+    iretq
+
 isr_stub_table:
 
 %assign i 0

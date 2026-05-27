@@ -5,7 +5,7 @@
 static uint64_t *pml4_table;
 
 void vmm_init(void) {
-    klog("[VMM] старт init_vmm...\n");
+    klog("[VMM] starting init_vmm...\n");
 
     pml4_table = (uint64_t*)pmm_alloc_page();
     if (!pml4_table) {

@@ -1,6 +1,5 @@
 SRC_DIR="src"
 BUILD_DIR="build"
-
 FLAGS="-ffreestanding -O2 -Wall -Wextra -fno-stack-protector -mno-red-zone -fno-pic -fno-pie -fno-builtin -mno-mmx -mno-sse -mno-sse2"
 LDFLAGS="-n -static --oformat=elf64-x86-64 --no-warn-rwx-segments -z max-page-size=0x1000 -T linker.ld"
 
@@ -52,7 +51,7 @@ do_build() {
 do_boot() {
     echo "booting system..."
     if [ -f "aeternaos.iso" ]; then
-        qemu-system-x86_64 -cdrom aeternaos.iso -boot d -d cpu_reset,int -D direct_qemu.log
+        qemu-system-x86_64 -cdrom aeternaos.iso -boot d -serial stdio -d cpu_reset,int -D direct_qemu.log
     else
         echo "err: aeternaos.iso was not found. have you built it?"
     fi
