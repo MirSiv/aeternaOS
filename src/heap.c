@@ -24,7 +24,7 @@ static int expand_heap(size_t bytes) {
     return 1;
 }
 
-void init_heap(void) {
+void heap_init(void) {
     klog("[HEAP] kernel heap initialization...\n");
 
     expand_heap(HEAP_INITIAL_PAGES * PAGE_SIZE);

@@ -26,10 +26,11 @@ void idt_set_gate(uint8_t num, uint64_t base, uint16_t sel, uint8_t flags) {
     idt[num].isr_high = (uint32_t)((base >> 32) & 0xFFFFFFFF);
     idt[num].reserved = 0;
 }
-
+extern void timer_interrupt_asm(void);
 extern void *isr_stub_table[];
 extern void irq0();
 extern void irq1(); 
+
 void pic_init(void) {
     klog("[PIC] remapping PIC to vectors 32-47...\n");
     outb(0x20, 0x11); io_wait();
@@ -46,7 +47,7 @@ void pic_init(void) {
 }
 void timer_init(void) {
     klog("[PIT] setting timer frequency to 100hz...\n");
-    uint32_t divisor = 1193182 / 100;
+    uint32_t divisor = 1193182 / 1000;
     outb(0x43, 0x36);
     outb(0x40, divisor & 0xFF);
     outb(0x40, (divisor >> 8) & 0xFF);
@@ -72,8 +73,8 @@ void idt_init(void) {
     klog("[IDT] 32 exceptions filled successfully\n");
 
     klog("[IDT] filling hardware IRQs...\n");
-    idt_set_gate(32, (uint64_t)irq0, 0x08, 0x8E); 
-    idt_set_gate(33, (uint64_t)irq1, 0x08, 0x8E); 
+    idt_set_gate(32, (uint64_t)timer_interrupt_asm, 0x08, 0x8E);
+    idt_set_gate(33, (uint64_t)irq1, 0x08, 0x8E);
 
     pic_init();
     timer_init();
@@ -104,8 +105,8 @@ static uint64_t timer_ticks = 0;
 
 void timer_handler(void) {
     timer_ticks++;
-    if (timer_ticks % 100 == 0) {
-        klog("[TIMER] 1 sec passed\n");
+    if (timer_ticks % 1000 == 0) {
+        //klog("[TIMER] 1 sec passed\n");
     }
     outb(0x20, 0x20);
 }

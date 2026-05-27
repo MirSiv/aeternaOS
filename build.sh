@@ -7,8 +7,18 @@ do_build() {
     echo "building aeternaOS..."
     mkdir -p "$BUILD_DIR"
 
-    echo "[1/4] compiling NASM..."
-    nasm -f elf64 "$SRC_DIR/boot.asm" -o "$BUILD_DIR/boot.o"
+    echo "[1/4] compiling NASM files..."
+    ASM_OBJ_FILES=""
+    for asm_file in "$SRC_DIR"/*.asm; do
+        if [ -f "$asm_file" ]; then
+            asm_filename=$(basename -- "$asm_file")
+            asm_filename="${asm_filename%.*}"
+            
+            echo "  -> $asm_file"
+            nasm -f elf64 "$asm_file" -o "$BUILD_DIR/$asm_filename.o"
+            ASM_OBJ_FILES="$ASM_OBJ_FILES $BUILD_DIR/$asm_filename.o"
+        fi
+    done
 
     echo "[2/4] compiling all .c files in /src..."
     OBJ_FILES="" # boot.o adds when linking
@@ -26,7 +36,7 @@ do_build() {
     done
 
     echo "[3/4] linking kernel..."
-    x86_64-linux-gnu-ld $LDFLAGS -o "$BUILD_DIR/kernel.bin" "$BUILD_DIR/boot.o" $OBJ_FILES
+    x86_64-linux-gnu-ld $LDFLAGS -o "$BUILD_DIR/kernel.bin" $ASM_OBJ_FILES $OBJ_FILES
 
     if grub-file --is-x86-multiboot2 "$BUILD_DIR/kernel.bin"; then
         echo "  -> checking multiboot2 headers"

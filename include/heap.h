@@ -10,7 +10,7 @@ struct heap_chunk {
     struct heap_chunk *next;
 };
 
-void init_heap(void);
+void heap_init(void);
 void *kmalloc(size_t size);
 void kfree(void *ptr);
 
