@@ -61,4 +61,6 @@ void gdt_init(void) {
     klog("[TSS] loading the task register (ltr)...\n");
     tss_flush();
     klog("[TSS] safe interrupt stack enabled...\n");
+    
+    klog("[GDT] initialization complete.\n");
 }
