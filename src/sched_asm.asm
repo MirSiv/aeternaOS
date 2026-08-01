@@ -47,3 +47,5 @@ timer_interrupt_asm:
     pop rax
 
     iretq
+
+section .note.GNU-stack noalloc noexec nowrite progbits
