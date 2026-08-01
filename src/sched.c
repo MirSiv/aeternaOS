@@ -17,6 +17,14 @@ void idle_task(void) {
 }
 
 void init_scheduler(void) {
+    for (int i = 0; i < MAX_THREADS; i++) {
+        thread_table[i].next = 0;
+        thread_table[i].state = 0;
+    }
+    thread_count = 0;
+    current_thread = 0;
+    idle_thread = 0;
+    
     idle_thread = create_kernel_thread(idle_task);
     current_thread = idle_thread;
     current_thread->state = 1;

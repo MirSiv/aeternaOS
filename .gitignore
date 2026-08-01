@@ -1,7 +1,14 @@
 ```
-# Compiled and build artifacts
-*.bin
-*.o
-*.obj
+# Logs and temp files
+*.log
+*.tmp
+*.swp
+
+# Build artifacts
 build/
+*.o
+*.bin
+
+# ISO files
+*.iso
 ```
