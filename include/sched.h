@@ -20,6 +20,7 @@ typedef struct thread {
 } thread_t;
 
 void init_scheduler(void);
+thread_t* create_kernel_thread(void (*entry_point)(void));
 thread_t* create_thread(void (*entry_point)(void));
 uint64_t schedule(uint64_t current_rsp);
 

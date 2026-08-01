@@ -6,6 +6,8 @@ static struct {
     struct gdt_entry null_entry;
     struct gdt_entry code_entry;
     struct gdt_entry data_entry;
+    struct gdt_entry user_code_entry;
+    struct gdt_entry user_data_entry;
     struct gdt_tss_entry tss_entry;
 } __attribute__((packed)) gdt;
 
@@ -26,8 +28,10 @@ void gdt_init(void) {
     klog("[GDT] initialization of data structures...\n");
 
     gdt_set_gate(&gdt.null_entry, 0, 0);
-    gdt_set_gate(&gdt.code_entry, 0x9A, 0x20);
-    gdt_set_gate(&gdt.data_entry, 0x92, 0x00);
+    gdt_set_gate(&gdt.code_entry, 0x9A, 0x20);   // Ring 0 code
+    gdt_set_gate(&gdt.data_entry, 0x92, 0x00);   // Ring 0 data
+    gdt_set_gate(&gdt.user_code_entry, 0xFA, 0x20); // Ring 3 code (DPL = 3)
+    gdt_set_gate(&gdt.user_data_entry, 0xF2, 0x00); // Ring 3 data (DPL = 3)
 
     uint64_t tss_base = (uint64_t)&tss;
     uint32_t tss_limit = sizeof(tss) - 1;

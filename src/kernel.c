@@ -20,8 +20,8 @@ void kernel_main(uint64_t mb_addr) {
     heap_init();
     
     init_scheduler();
-    create_thread(test_thread1);
-    create_thread(test_thread2);
+    create_kernel_thread(test_thread1);
+    create_kernel_thread(test_thread2);
 
     vga_set_color(0, 15);
     vga_clear(); 

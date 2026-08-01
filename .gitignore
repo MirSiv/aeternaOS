@@ -1,52 +1,30 @@
-```asm
-# Compiled and binary files
-*.o
-*.obj
-*.bin
-*.img
-*.iso
-
+```
 # Build artifacts
 build/
-dist/
-*.elf
-*.out
+*.o
+*.bin
+*.iso
 
 # Dependencies
-*.a
-*.so
-*.dylib
-*.dll
+node_modules/
+.venv/
+venv/
+__pycache__/
 
 # Logs and temp files
 *.log
 *.tmp
-*.bak
 
-# Editor/IDE files
+# Editors
 .vscode/
 .idea/
-*.swp
-*.swo
 
-# System files
+# Environment
+.env
+.env.local
+*.env.*
+
+# OS specific
 .DS_Store
 Thumbs.db
-
-# Coverage and testing
-coverage/
-htmlcov/
-.coverage
-*.gcda
-*.gcno
-
-# Compression artifacts
-*.zip
-*.gz
-*.tar
-*.tgz
-*.bz2
-*.xz
-*.7z
-*.rar
 ```
