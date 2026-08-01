@@ -17,9 +17,42 @@ void idle_task(void) {
 }
 
 void init_scheduler(void) {
-    idle_thread = create_thread(idle_task);
+    idle_thread = create_kernel_thread(idle_task);
     current_thread = idle_thread;
     current_thread->state = 1;
+}
+
+thread_t* create_kernel_thread(void (*entry_point)(void)) {
+    if (thread_count >= MAX_THREADS) {
+        klog("[SCHED] err: max threads reached\n");
+        return 0;
+    }
+
+    thread_t* t = &thread_table[thread_count];
+    t->id = thread_count;
+    t->state = 0;
+
+    uint64_t stack_top = (uint64_t)&thread_stacks[thread_count][STACK_SIZE];
+    stack_top &= ~0xF;
+    stack_top -= sizeof(context_t);
+    context_t* ctx = (context_t*)stack_top;
+
+    ctx->rflags = 0x202;
+    ctx->cs = 0x08;  // Ring 0 code selector
+    ctx->ss = 0x10;  // Ring 0 data selector
+    ctx->rip = (uint64_t)entry_point;
+    ctx->rsp = stack_top + sizeof(context_t) - 8;
+
+    t->kstack = stack_top;
+    if (thread_count > 0) {
+        thread_table[thread_count - 1].next = t;
+        t->next = &thread_table[0];
+    } else {
+        t->next = t;
+    }
+
+    thread_count++;
+    return t;
 }
 
 thread_t* create_thread(void (*entry_point)(void)) {
@@ -38,8 +71,8 @@ thread_t* create_thread(void (*entry_point)(void)) {
     context_t* ctx = (context_t*)stack_top;
 
     ctx->rflags = 0x202;
-    ctx->cs = 0x08;
-    ctx->ss = 0x10;
+    ctx->cs = 0x1B;  // Ring 3 code selector (index 3, RPL=3): 3*8+3=0x1B
+    ctx->ss = 0x23;  // Ring 3 data selector (index 4, RPL=3): 4*8+3=0x23
     ctx->rip = (uint64_t)entry_point;
     ctx->rsp = stack_top + sizeof(context_t) - 8;
 
