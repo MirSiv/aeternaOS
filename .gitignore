@@ -1,30 +1,7 @@
 ```
-# Build artifacts
-build/
-*.o
+# Compiled and build artifacts
 *.bin
-*.iso
-
-# Dependencies
-node_modules/
-.venv/
-venv/
-__pycache__/
-
-# Logs and temp files
-*.log
-*.tmp
-
-# Editors
-.vscode/
-.idea/
-
-# Environment
-.env
-.env.local
-*.env.*
-
-# OS specific
-.DS_Store
-Thumbs.db
+*.o
+*.obj
+build/
 ```

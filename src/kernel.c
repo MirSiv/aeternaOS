@@ -19,10 +19,6 @@ void kernel_main(uint64_t mb_addr) {
     
     heap_init();
     
-    init_scheduler();
-    create_kernel_thread(test_thread1);
-    create_kernel_thread(test_thread2);
-
     vga_set_color(0, 15);
     vga_clear(); 
     
@@ -33,6 +29,10 @@ void kernel_main(uint64_t mb_addr) {
     kprint("everything works, ig\n");
 
     klog("[kernel] all subsystems initialized, spinning up threads...\n");
+
+    init_scheduler();
+    create_kernel_thread(test_thread1);
+    create_kernel_thread(test_thread2);
 
     asm volatile("sti");
 
