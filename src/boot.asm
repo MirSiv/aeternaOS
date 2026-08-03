@@ -264,7 +264,7 @@ gdt_flush:
 global tss_flush
 
 tss_flush:
-    mov ax, 0x18
+    mov ax, 0x28
     ltr ax
     ret
 
@@ -401,14 +401,14 @@ irq0:
     push r14
     push r15
 
-    mov rdi, rsp    ; передаем указатель на фрейм первым аргументом в Си
-    mov rbp, rsp    ; запоминаем стек
-    and rsp, -16    ; выравниваем по 16 байт
+    mov rdi, rsp
+    mov rbp, rsp
+    and rsp, -16
     sub rsp, 8
 
     call timer_handler
 
-    mov rsp, rbp    ; восстанавливаем стек
+    mov rsp, rbp
     
     ; восстанавливаем регистры
     pop r15
