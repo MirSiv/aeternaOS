@@ -11,6 +11,91 @@
 void test_thread1(void);
 void test_thread2(void);
 
+// Тест системных вызовов
+void test_syscalls(void) {
+    klog("\r\n[TEST] === SYSCALL TEST START ===\r\n");
+    
+    // Тест SYS_WRITE (syscall 2)
+    klog("[TEST] Testing SYS_WRITE...\r\n");
+    uint64_t syscall_num = 2;
+    uint64_t fd = 1;
+    uint64_t buf = 0x1000;  // адрес буфера (заглушка)
+    uint64_t count = 13;
+    
+    __asm__ volatile (
+        "mov %0, %%rax\n\t"
+        "mov %1, %%rdi\n\t"
+        "mov %2, %%rsi\n\t"
+        "mov %3, %%rdx\n\t"
+        "syscall\n\t"
+        :
+        : "r"(syscall_num), "r"(fd), "r"(buf), "r"(count)
+        : "rax", "rdi", "rsi", "rdx", "rcx", "r11"
+    );
+    
+    // Тест SYS_READ (syscall 1)
+    klog("[TEST] Testing SYS_READ...\r\n");
+    syscall_num = 1;
+    fd = 0;
+    buf = 0x2000;
+    count = 10;
+    
+    __asm__ volatile (
+        "mov %0, %%rax\n\t"
+        "mov %1, %%rdi\n\t"
+        "mov %2, %%rsi\n\t"
+        "mov %3, %%rdx\n\t"
+        "syscall\n\t"
+        :
+        : "r"(syscall_num), "r"(fd), "r"(buf), "r"(count)
+        : "rax", "rdi", "rsi", "rdx", "rcx", "r11"
+    );
+    
+    // Тест SYS_OPEN (syscall 3)
+    klog("[TEST] Testing SYS_OPEN...\r\n");
+    syscall_num = 3;
+    fd = 0x5000;  // путь к файлу (заглушка)
+    uint64_t flags = 0x2;  // O_RDWR
+    
+    __asm__ volatile (
+        "mov %0, %%rax\n\t"
+        "mov %1, %%rdi\n\t"
+        "mov %2, %%rsi\n\t"
+        "syscall\n\t"
+        :
+        : "r"(syscall_num), "r"(fd), "r"(flags)
+        : "rax", "rdi", "rsi", "rcx", "r11"
+    );
+    
+    // Тест SYS_CLOSE (syscall 4)
+    klog("[TEST] Testing SYS_CLOSE...\r\n");
+    syscall_num = 4;
+    fd = 3;
+    
+    __asm__ volatile (
+        "mov %0, %%rax\n\t"
+        "mov %1, %%rdi\n\t"
+        "syscall\n\t"
+        :
+        : "r"(syscall_num), "r"(fd)
+        : "rax", "rdi", "rcx", "r11"
+    );
+    
+    // Тест неизвестного syscall
+    klog("[TEST] Testing unknown syscall (999)...\r\n");
+    syscall_num = 999;
+    
+    __asm__ volatile (
+        "mov %0, %%rax\n\t"
+        "syscall\n\t"
+        :
+        : "r"(syscall_num)
+        : "rax", "rcx", "r11"
+    );
+    
+    klog("[TEST] === SYSCALL TEST END ===\r\n");
+}
+
 void kernel_main(uint64_t mb_addr) {
     gdt_init();
     idt_init();
