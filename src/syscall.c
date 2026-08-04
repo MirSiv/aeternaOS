@@ -5,21 +5,10 @@
 // Внешняя ссылка на ассемблерный обработчик
 extern void syscall_handler_asm(void);
 
-// Обработчик системных вызовов на C
-void syscall_handler(struct syscall_frame *frame) {
-    // Детальное логирование для отладки через COM1
-    klog("\r\n[SYSCALL] === SYSCALL ENTRY ===\r\n");
-    klog("[SYSCALL] RAX (syscall num): ");
-    klog_dec(frame->rax);
-    klog("\r\n[SYSCALL] Registers:\r\n");
-    klog("  RDI: "); klog_hex(frame->rdi); klog("\r\n");
-    klog("  RSI: "); klog_hex(frame->rsi); klog("\r\n");
-    klog("  RDX: "); klog_hex(frame->rdx); klog("\r\n");
-    klog("  RCX: "); klog_hex(frame->rcx); klog("\r\n");
-    klog("  R8:  "); klog_hex(frame->r8);  klog("\r\n");
-    klog("  R9:  "); klog_hex(frame->r9);  klog("\r\n");
-    klog("  R10: "); klog_hex(frame->r10); klog("\r\n");
-    klog("  R11: "); klog_hex(frame->r11); klog("\r\n");
+// Диспетчер системных вызовов на C (вызывается из ассемблерного обработчика)
+void syscall_handler_c(struct syscall_frame *frame) {
+    // Логирование для отладки
+    klog("[SYSCALL] intercepted syscall: ");
     
     switch (frame->rax) {
         case SYS_EXIT:
@@ -122,6 +111,12 @@ void syscall_handler(struct syscall_frame *frame) {
     klog("[SYSCALL] Returning RAX: ");
     klog_hex(frame->rax);
     klog("\r\n[SYSCALL] === SYSCALL EXIT ===\r\n");
+}
+
+// Ассемблерный обработчик (обёртка)
+void syscall_handler(void) {
+    struct syscall_frame *frame = (struct syscall_frame *)__builtin_frame_address(0);
+    syscall_handler_c(frame);
 }
 
 // Инициализация MSR регистров для SYSCALL/SYSRET
