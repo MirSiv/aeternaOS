@@ -38,3 +38,56 @@ void klog(const char *str) {
         write_serial_char(*str++);
     }
 }
+
+void klog_hex(uint64_t value) {
+    const char hex_chars[] = "0123456789ABCDEF";
+    char buffer[18];
+    int i = 0;
+    
+    if (value == 0) {
+        klog("0x0");
+        return;
+    }
+    
+    // Build hex string in reverse
+    buffer[i++] = 'x';
+    buffer[i++] = '0';
+    while (value > 0) {
+        buffer[i++] = hex_chars[value & 0xF];
+        value >>= 4;
+    }
+    
+    // Print in correct order
+    while (i > 0) {
+        write_serial_char(buffer[--i]);
+    }
+}
+
+void klog_dec(int64_t value) {
+    char buffer[22];
+    int i = 0;
+    int negative = 0;
+    
+    if (value < 0) {
+        negative = 1;
+        value = -value;
+    }
+    
+    if (value == 0) {
+        klog("0");
+        return;
+    }
+    
+    while (value > 0) {
+        buffer[i++] = '0' + (value % 10);
+        value /= 10;
+    }
+    
+    if (negative) {
+        write_serial_char('-');
+    }
+    
+    while (i > 0) {
+        write_serial_char(buffer[--i]);
+    }
+}
