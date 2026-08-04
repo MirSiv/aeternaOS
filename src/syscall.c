@@ -5,8 +5,8 @@
 // Внешняя ссылка на ассемблерный обработчик
 extern void syscall_handler_asm(void);
 
-// Обработчик системных вызовов на C
-void syscall_handler(struct syscall_frame *frame) {
+// Диспетчер системных вызовов на C (вызывается из ассемблерного обработчика)
+void syscall_handler_c(struct syscall_frame *frame) {
     // Логирование для отладки
     klog("[SYSCALL] intercepted syscall: ");
     
@@ -87,6 +87,12 @@ void syscall_handler(struct syscall_frame *frame) {
             frame->rax = -1; // неверный номер системного вызова
             break;
     }
+}
+
+// Ассемблерный обработчик (обёртка)
+void syscall_handler(void) {
+    struct syscall_frame *frame = (struct syscall_frame *)__builtin_frame_address(0);
+    syscall_handler_c(frame);
 }
 
 // Инициализация MSR регистров для SYSCALL/SYSRET

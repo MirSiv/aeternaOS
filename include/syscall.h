@@ -31,7 +31,11 @@ struct syscall_frame {
 void syscall_init(void);
 
 // Обработчик системных вызовов (вызывается из ассемблера)
-void syscall_handler(struct syscall_frame *frame);
+// Принимает указатель на фрейм сохранённых регистров
+void syscall_handler_c(struct syscall_frame *frame);
+
+// Ассемблерная обёртка обработчика (вызывается напрямую из ASM)
+void syscall_handler(void);
 
 // Номера системных вызовов
 #define SYS_EXIT        0
