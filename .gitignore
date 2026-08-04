@@ -1,6 +1,8 @@
 ```
-# Build artifacts
-build/
+# Compiled and build artifacts
 *.o
-*.bin
+*.obj
+*.out
+*.iso
+*.log
 ```
