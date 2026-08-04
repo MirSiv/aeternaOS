@@ -1,14 +1,6 @@
 ```
-# Logs and temp files
-*.log
-*.tmp
-*.swp
-
 # Build artifacts
 build/
 *.o
 *.bin
-
-# ISO files
-*.iso
 ```

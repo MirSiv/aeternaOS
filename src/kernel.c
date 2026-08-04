@@ -6,6 +6,7 @@
 #include "heap.h"
 #include "serial.h"
 #include "sched.h"
+#include "syscall.h"
 
 void test_thread1(void);
 void test_thread2(void);
@@ -18,6 +19,9 @@ void kernel_main(uint64_t mb_addr) {
     vmm_init();
     
     heap_init();
+    
+    // Инициализация системных вызовов
+    syscall_init();
     
     vga_set_color(0, 15);
     vga_clear(); 
